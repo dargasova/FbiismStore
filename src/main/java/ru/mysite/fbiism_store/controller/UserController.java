@@ -3,54 +3,50 @@ package ru.mysite.fbiism_store.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.User;
+import ru.mysite.fbiism_store.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> getAllUsers() {
-        return users;
+        return userService.getAllUsers();
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        users.add(user);
-        return user;
+        return userService.createUser(user);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return users.stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst()
+        return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
-                user.setName(updatedUser.getName());
-                user.setEmail(updatedUser.getEmail());
-                user.setPhone(updatedUser.getPhone());
-                return ResponseEntity.ok(user);
-            }
-        }
-        return ResponseEntity.notFound().build();
+        User user = userService.updateUser(id, updatedUser);
+        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
-
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        users.removeIf(user -> user.getId().equals(id));
-        return "Пользователь с id " + id + " был удален";
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        if (userService.existsById(id)) {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Пользователь с id " + id + " был удален");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
