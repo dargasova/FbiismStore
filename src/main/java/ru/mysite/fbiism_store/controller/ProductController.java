@@ -1,8 +1,10 @@
 package ru.mysite.fbiism_store.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.Product;
+import ru.mysite.fbiism_store.service.ImageService;
 import ru.mysite.fbiism_store.service.ProductService;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ImageService imageService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ImageService imageService) {
         this.productService = productService;
+        this.imageService = imageService;
     }
 
     @GetMapping
@@ -23,8 +27,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        Product createdProduct = productService.createProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @GetMapping("/{id}")
@@ -37,7 +42,11 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
         Product product = productService.updateProduct(id, updatedProduct);
-        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -48,5 +57,11 @@ public class ProductController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/update-images")
+    public ResponseEntity<String> updateImages() {
+        imageService.updateProductImages();
+        return ResponseEntity.ok("Изображения обновлены");
     }
 }

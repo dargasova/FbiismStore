@@ -2,6 +2,7 @@ package ru.mysite.fbiism_store.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Order {
     private Product product;
 
     @NotNull
+    @Positive
     private int quantity;
 
     @ManyToOne
@@ -30,4 +32,8 @@ public class Order {
 
     @NotNull
     private String customer_details;
+
+    private String color;
+
+    private String size;
 }
