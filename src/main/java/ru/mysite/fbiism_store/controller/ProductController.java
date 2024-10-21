@@ -1,11 +1,12 @@
 package ru.mysite.fbiism_store.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.Product;
 import ru.mysite.fbiism_store.service.ImageService;
 import ru.mysite.fbiism_store.service.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -59,9 +60,16 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/update-images")
-    public ResponseEntity<String> updateImages() {
-        imageService.updateProductImages();
+    @PostMapping("/{id}/update-images")
+    public ResponseEntity<String> updateImages(@PathVariable Long id,
+                                               @RequestParam("files") MultipartFile[] files,
+                                               @RequestParam("color") String color) {
+        Product product = productService.getProductById(id).orElse(null);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        imageService.updateProductImages(files, product, color);
         return ResponseEntity.ok("Изображения обновлены");
     }
 }

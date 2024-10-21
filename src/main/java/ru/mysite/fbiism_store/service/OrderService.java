@@ -55,7 +55,7 @@ public class OrderService {
 
                     order.setProduct(updatedOrder.getProduct());
                     order.setQuantity(updatedOrder.getQuantity());
-                    order.setCustomer_details(updatedOrder.getCustomer_details());
+                    order.setCustomerDetails(updatedOrder.getCustomerDetails());  // Исправление здесь
                     order.setColor(updatedOrder.getColor());
                     order.setSize(updatedOrder.getSize());
                     return orderRepository.save(order);
