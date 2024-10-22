@@ -8,7 +8,6 @@ import ru.mysite.fbiism_store.model.Product;
 import ru.mysite.fbiism_store.model.ProductImage;
 import ru.mysite.fbiism_store.repository.ProductImageRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,26 +15,24 @@ import java.util.List;
 @Service
 public class ImageService {
 
-    private static final String UPLOAD_DIR = "C:\\Users\\User\\IdeaProjects\\fbiism_store\\uploads\\images\\";
     private final ProductImageRepository productImageRepository;
+    private final FileService fileService;
 
     @Autowired
-    public ImageService(ProductImageRepository productImageRepository) {
+    public ImageService(ProductImageRepository productImageRepository, FileService fileService) {
         this.productImageRepository = productImageRepository;
+        this.fileService = fileService;
     }
 
     @Transactional
     public List<String> uploadImages(MultipartFile[] files, Product product, String color) {
         List<String> uploadedUrls = new ArrayList<>();
-        long imageCount = product.getImages().stream()
-                .filter(image -> image.getColor().equalsIgnoreCase(color))
-                .count();
+        long imageCount = validateColorAvailability(product, color);
 
         for (MultipartFile file : files) {
             try {
-                String fileUrl = saveFile(file, product.getId(), color, ++imageCount);
+                String fileUrl = saveAndAddImage(file, product, color, ++imageCount);
                 uploadedUrls.add(fileUrl);
-                product.addImage(new ProductImage(fileUrl, color.toLowerCase(), product));
             } catch (IOException e) {
                 return List.of("Ошибка загрузки файла: " + e.getMessage());
             }
@@ -51,10 +48,17 @@ public class ImageService {
         return uploadImages(files, product, color);
     }
 
-    private String saveFile(MultipartFile file, Long productId, String color, long imageCount) throws IOException {
-        String fileName = String.format("product%d_color%s_image%d.png", productId, color.toLowerCase(), imageCount);
-        File destinationFile = new File(UPLOAD_DIR + fileName);
-        file.transferTo(destinationFile);
-        return "http://localhost:8080/uploads/images/" + fileName;
+    // Утилитарный метод для валидации
+    private long validateColorAvailability(Product product, String color) {
+        return product.getImages().stream()
+                .filter(image -> image.getColor().equalsIgnoreCase(color))
+                .count();
+    }
+
+    // Утилитарный метод для сохранения файла и добавления изображения
+    private String saveAndAddImage(MultipartFile file, Product product, String color, long imageCount) throws IOException {
+        String fileUrl = fileService.saveFile(file, product.getId(), color, imageCount);
+        product.addImage(new ProductImage(fileUrl, color.toLowerCase(), product));
+        return fileUrl;
     }
 }
