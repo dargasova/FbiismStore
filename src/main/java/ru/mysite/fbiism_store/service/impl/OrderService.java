@@ -1,10 +1,11 @@
-package ru.mysite.fbiism_store.service;
+package ru.mysite.fbiism_store.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mysite.fbiism_store.model.Order;
 import ru.mysite.fbiism_store.repository.OrderRepository;
+import ru.mysite.fbiism_store.service.IOrderService;
 import ru.mysite.fbiism_store.validation.OrderValidator;
 
 import java.util.List;

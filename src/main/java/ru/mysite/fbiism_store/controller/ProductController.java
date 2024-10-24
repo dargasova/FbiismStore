@@ -3,8 +3,8 @@ package ru.mysite.fbiism_store.controller;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.Product;
-import ru.mysite.fbiism_store.service.ImageService;
-import ru.mysite.fbiism_store.service.ProductService;
+import ru.mysite.fbiism_store.service.impl.ImageService;
+import ru.mysite.fbiism_store.service.impl.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

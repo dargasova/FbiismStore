@@ -3,7 +3,7 @@ package ru.mysite.fbiism_store.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.Order;
-import ru.mysite.fbiism_store.service.OrderService;
+import ru.mysite.fbiism_store.service.impl.OrderService;
 
 import java.util.List;
 

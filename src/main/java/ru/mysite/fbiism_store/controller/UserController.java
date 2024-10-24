@@ -3,7 +3,7 @@ package ru.mysite.fbiism_store.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.User;
-import ru.mysite.fbiism_store.service.UserService;
+import ru.mysite.fbiism_store.service.impl.UserService;
 
 import java.util.List;
 
