@@ -3,6 +3,7 @@ package ru.mysite.fbiism_store.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -16,15 +17,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Обеспечиваем HTTPS для всех запросов
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()) // Открываем доступ ко всем запросам
-                .csrf(csrf -> csrf.disable()) // Отключаем CSRF для тестирования
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())); // Включаем CORS
+                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
 
-    // Настройка источника CORS
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000"));

@@ -2,6 +2,7 @@ package ru.mysite.fbiism_store.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -26,11 +27,12 @@ public class OrderItem {
     @Positive
     private Integer quantity;
 
+    @NotBlank(message = "Color cannot be blank")
     private String color;
 
+    @NotBlank(message = "Size cannot be blank")
     private String size;
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

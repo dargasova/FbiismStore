@@ -1,6 +1,7 @@
 package ru.mysite.fbiism_store.service;
 
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 public interface IFileService {

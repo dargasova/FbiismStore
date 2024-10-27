@@ -2,9 +2,11 @@ package ru.mysite.fbiism_store.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +18,11 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(min = 1, max = 100)
     private String name;
 
-    @NotNull
+    @NotBlank
     @Size(min = 1, max = 255)
     private String description;
 
@@ -28,23 +30,26 @@ public class Product {
     @Positive
     private Double price;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "product_colors", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "color")
     private List<String> colors = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "size")
-    private List<String> sizes = new ArrayList<>();
+    private List<String> sizes = new ArrayList<>(List.of("ONE SIZE"));
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<ProductImage> images = new ArrayList<>();
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -92,19 +97,31 @@ public class Product {
     }
 
     public void setImages(List<ProductImage> images) {
-        this.images = images;
+        this.images.clear();
         for (ProductImage image : images) {
-            image.setProduct(this);
+            addImage(image);
         }
     }
 
     public void addImage(ProductImage image) {
-        this.images.add(image);
+        images.add(image);
         image.setProduct(this);
     }
 
     public void removeImage(ProductImage image) {
-        this.images.remove(image);
+        images.remove(image);
         image.setProduct(null);
+    }
+
+    public void updateFrom(Product updatedProduct) {
+        this.name = updatedProduct.name;
+        this.description = updatedProduct.description;
+        this.price = updatedProduct.price;
+        this.colors = updatedProduct.colors;
+        this.sizes = updatedProduct.sizes;
+        this.images.clear();
+        for (ProductImage image : updatedProduct.getImages()) {
+            addImage(image);
+        }
     }
 }

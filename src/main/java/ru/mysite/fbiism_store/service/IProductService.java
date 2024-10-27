@@ -7,9 +7,12 @@ import java.util.Optional;
 
 public interface IProductService {
     List<Product> getAllProducts();
+
     Product createProduct(Product product);
+
     Optional<Product> getProductById(Long id);
+
     Product updateProduct(Long id, Product updatedProduct);
+
     void deleteProduct(Long id);
-    boolean existsById(Long id);
 }

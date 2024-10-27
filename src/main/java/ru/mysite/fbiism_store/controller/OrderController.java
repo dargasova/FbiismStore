@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mysite.fbiism_store.model.Order;
-import ru.mysite.fbiism_store.service.impl.OrderService;
+import ru.mysite.fbiism_store.service.IOrderService;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,10 +15,9 @@ import java.util.List;
 public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    private final IOrderService orderService;
 
-    private final OrderService orderService;
-
-    public OrderController(OrderService orderService) {
+    public OrderController(IOrderService orderService) {
         this.orderService = orderService;
     }
 
@@ -30,19 +29,18 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
         Order savedOrder = orderService.createOrder(order);
-        // Возвращаем ID созданного заказа
         return ResponseEntity.ok(Collections.singletonMap("orderId", savedOrder.getId()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id) {
         return orderService.getOrderById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder) {
+    public ResponseEntity<?> updateOrder(@PathVariable("id") Long id, @RequestBody Order updatedOrder) {
         try {
             Order order = orderService.updateOrder(id, updatedOrder);
             return order != null ? ResponseEntity.ok(order) : ResponseEntity.notFound().build();
@@ -56,7 +54,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<String> deleteOrder(@PathVariable("id") Long id) {
         if (orderService.existsById(id)) {
             orderService.deleteOrder(id);
             return ResponseEntity.ok("Заказ с id " + id + " был удален");

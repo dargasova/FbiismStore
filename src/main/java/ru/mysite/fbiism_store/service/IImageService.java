@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IImageService {
     List<String> uploadImages(MultipartFile[] files, Product product, String color);
+
     List<String> updateProductImages(MultipartFile[] files, Product product, String color);
 }

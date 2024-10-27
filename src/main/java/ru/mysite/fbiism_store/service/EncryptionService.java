@@ -13,12 +13,10 @@ public class EncryptionService {
 
     private static final String ALGORITHM = "AES";
 
-    // Загружаем ключ из application.properties
     @Value("${encryption.secret-key}")
     private String secretKeyString;
 
     private SecretKey getSecretKey() {
-        // Преобразуем строку пароля в байты и создаём ключ
         byte[] key = secretKeyString.getBytes();
         return new SecretKeySpec(key, 0, key.length, ALGORITHM);
     }

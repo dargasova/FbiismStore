@@ -23,7 +23,6 @@ public class ProductImage {
     @JsonBackReference
     private Product product;
 
-    // Constructors, Getters, and Setters
     public ProductImage() {
     }
 

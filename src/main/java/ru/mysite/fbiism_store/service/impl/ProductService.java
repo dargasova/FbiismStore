@@ -5,14 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mysite.fbiism_store.model.Product;
 import ru.mysite.fbiism_store.repository.ProductRepository;
-import ru.mysite.fbiism_store.service.IProductService;
 import ru.mysite.fbiism_store.validation.ProductValidator;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
-public class ProductService implements IProductService {
+public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductValidator productValidator;
@@ -23,55 +22,36 @@ public class ProductService implements IProductService {
         this.productValidator = productValidator;
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    @Override
     @Transactional
     public Product createProduct(Product product) {
-        // Устанавливаем размер по умолчанию, если размеры отсутствуют
-        if (product.getSizes() == null || product.getSizes().isEmpty()) {
-            product.setSizes(List.of("ONE SIZE")); // Устанавливаем "ONE SIZE" в качестве единственного размера
-        }
-        productValidator.validateProduct(product);
+        productValidator.validateAndSetDefaults(product);
         return productRepository.save(product);
     }
 
-    @Override
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Продукт не найден"));
     }
 
-    @Override
     @Transactional
     public Product updateProduct(Long id, Product updatedProduct) {
-        return productRepository.findById(id)
-                .map(product -> {
-                    // Устанавливаем размер по умолчанию, если размеры отсутствуют
-                    if (updatedProduct.getSizes() == null || updatedProduct.getSizes().isEmpty()) {
-                        updatedProduct.setSizes(List.of("ONE SIZE")); // Устанавливаем "ONE SIZE" в качестве единственного размера
-                    }
-
-                    productValidator.validateProduct(updatedProduct);
-                    product.setName(updatedProduct.getName());
-                    product.setDescription(updatedProduct.getDescription());
-                    product.setPrice(updatedProduct.getPrice());
-                    product.setColors(updatedProduct.getColors());
-                    product.setSizes(updatedProduct.getSizes());
-                    product.setImages(updatedProduct.getImages());
-                    return productRepository.save(product);
-                }).orElse(null);
+        Product existingProduct = getProductById(id);
+        productValidator.validateAndSetDefaults(updatedProduct);
+        existingProduct.updateFrom(updatedProduct);
+        return productRepository.save(existingProduct);
     }
 
-    @Override
+    @Transactional
     public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new NoSuchElementException("Продукт не найден");
+        }
         productRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return productRepository.existsById(id);
     }
 }
