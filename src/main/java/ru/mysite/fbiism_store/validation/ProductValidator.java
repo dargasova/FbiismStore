@@ -19,8 +19,10 @@ public class ProductValidator {
             throw new IllegalArgumentException("Продукт должен иметь хотя бы один доступный цвет.");
         }
 
+        // Убедитесь, что хотя бы один размер присутствует (можно удалить проверку, если всегда устанавливается "ONE SIZE")
         if (product.getSizes() == null || product.getSizes().isEmpty()) {
             throw new IllegalArgumentException("Продукт должен иметь хотя бы один доступный размер.");
         }
     }
+
 }

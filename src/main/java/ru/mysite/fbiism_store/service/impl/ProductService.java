@@ -31,6 +31,10 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public Product createProduct(Product product) {
+        // Устанавливаем размер по умолчанию, если размеры отсутствуют
+        if (product.getSizes() == null || product.getSizes().isEmpty()) {
+            product.setSizes(List.of("ONE SIZE")); // Устанавливаем "ONE SIZE" в качестве единственного размера
+        }
         productValidator.validateProduct(product);
         return productRepository.save(product);
     }
@@ -45,6 +49,11 @@ public class ProductService implements IProductService {
     public Product updateProduct(Long id, Product updatedProduct) {
         return productRepository.findById(id)
                 .map(product -> {
+                    // Устанавливаем размер по умолчанию, если размеры отсутствуют
+                    if (updatedProduct.getSizes() == null || updatedProduct.getSizes().isEmpty()) {
+                        updatedProduct.setSizes(List.of("ONE SIZE")); // Устанавливаем "ONE SIZE" в качестве единственного размера
+                    }
+
                     productValidator.validateProduct(updatedProduct);
                     product.setName(updatedProduct.getName());
                     product.setDescription(updatedProduct.getDescription());

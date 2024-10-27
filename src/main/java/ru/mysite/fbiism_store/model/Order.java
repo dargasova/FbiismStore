@@ -1,8 +1,12 @@
 package ru.mysite.fbiism_store.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -12,59 +16,28 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @NotNull(message = "Customer details cannot be null")
+    private String customerDetails;
 
-    @NotNull
-    @Positive
-    private int quantity;
+    @NotNull(message = "Email cannot be null")
+    @Email(message = "Invalid email format")
+    private String email;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @NotNull(message = "Phone cannot be null")
+    @Pattern(regexp = "\\+?[0-9]{10,15}", message = "Invalid phone number")
+    private String phone;
 
-    @NotNull
-    private String customerDetails;  // Название поля изменено на camelCase
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<OrderItem> items = new ArrayList<>();
 
-    private String color;
+    // Геттеры и сеттеры
 
-    private String size;
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getCustomerDetails() {  // Исправленный геттер
+    public String getCustomerDetails() {
         return customerDetails;
     }
 
@@ -72,19 +45,40 @@ public class Order {
         this.customerDetails = customerDetails;
     }
 
-    public String getColor() {
-        return color;
+    public String getEmail() {
+        return email;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getSize() {
-        return size;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+        for (OrderItem item : items) {
+            item.setOrder(this);
+        }
+    }
+
+    public void addItem(OrderItem item) {
+        items.add(item);
+        item.setOrder(this);
+    }
+
+    public void removeItem(OrderItem item) {
+        items.remove(item);
+        item.setOrder(null);
     }
 }

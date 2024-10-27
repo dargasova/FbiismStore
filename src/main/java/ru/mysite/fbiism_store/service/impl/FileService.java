@@ -17,6 +17,6 @@ public class FileService implements IFileService {
         String fileName = String.format("product%d_color%s_image%d.png", productId, color.toLowerCase(), imageCount);
         File destinationFile = new File(UPLOAD_DIR + fileName);
         file.transferTo(destinationFile);
-        return "http://localhost:8080/uploads/images/" + fileName;
+        return "https://localhost:8443/uploads/images/" + fileName;
     }
 }

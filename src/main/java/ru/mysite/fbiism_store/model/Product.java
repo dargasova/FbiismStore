@@ -42,23 +42,9 @@ public class Product {
     @JsonManagedReference
     private List<ProductImage> images = new ArrayList<>();
 
-    // Getters and Setters
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void addImage(ProductImage image) {
-        this.images.add(image);
-        image.setProduct(this);
-    }
-
-    public void removeImage(ProductImage image) {
-        this.images.remove(image);
-        image.setProduct(null);
     }
 
     public String getName() {
@@ -110,5 +96,15 @@ public class Product {
         for (ProductImage image : images) {
             image.setProduct(this);
         }
+    }
+
+    public void addImage(ProductImage image) {
+        this.images.add(image);
+        image.setProduct(this);
+    }
+
+    public void removeImage(ProductImage image) {
+        this.images.remove(image);
+        image.setProduct(null);
     }
 }
