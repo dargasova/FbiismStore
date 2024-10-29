@@ -19,7 +19,7 @@ public class OrderValidator {
 
     public void validateOrder(Order order) {
         if (order.getItems() == null || order.getItems().isEmpty()) {
-            throw new IllegalArgumentException("Заказ должен содержать хотя бы один продукт.");
+            throw new IllegalArgumentException("Заказ должен содержать хотя бы один продукт");
         }
         for (OrderItem item : order.getItems()) {
             validateOrderItem(item);

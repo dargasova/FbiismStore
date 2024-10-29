@@ -27,10 +27,10 @@ public class OrderItem {
     @Positive
     private Integer quantity;
 
-    @NotBlank(message = "Color cannot be blank")
+    @NotBlank(message = "Цвет не может быть пустым")
     private String color;
 
-    @NotBlank(message = "Size cannot be blank")
+    @NotBlank(message = "Размер не может быть пустым")
     private String size;
 
     public Long getId() {

@@ -15,6 +15,6 @@ public class ProductControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка на сервере.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка на сервере");
     }
 }

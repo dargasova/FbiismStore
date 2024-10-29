@@ -2,9 +2,7 @@ package ru.mysite.fbiism_store.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +15,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Customer details cannot be null")
+    @NotNull(message = "Данные клиента не могут быть пустыми")
     private String customerDetails;
 
-    @NotNull(message = "Email cannot be null")
-    @Email(message = "Invalid email format")
+    @NotNull(message = "Адрес электронной почты не может быть пустым")
     private String email;
 
-    @NotNull(message = "Phone cannot be null")
-    @Pattern(regexp = "\\+?[0-9]{10,15}", message = "Invalid phone number")
+    @NotNull(message = "Номер телефона не может быть пустым")
     private String phone;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

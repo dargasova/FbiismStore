@@ -9,4 +9,6 @@ public interface IImageService {
     List<String> uploadImages(MultipartFile[] files, Product product, String color);
 
     List<String> updateProductImages(MultipartFile[] files, Product product, String color);
+
+    List<String> getImageUrlsByProduct(Product product);
 }

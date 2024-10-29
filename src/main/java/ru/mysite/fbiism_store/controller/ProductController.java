@@ -5,19 +5,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.mysite.fbiism_store.model.Product;
-import ru.mysite.fbiism_store.service.impl.ImageService;
-import ru.mysite.fbiism_store.service.impl.ProductService;
+import ru.mysite.fbiism_store.service.IImageService;
+import ru.mysite.fbiism_store.service.IProductService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductService productService;
-    private final ImageService imageService;
+    private final IProductService productService;
+    private final IImageService imageService;
 
-    public ProductController(ProductService productService, ImageService imageService) {
+    public ProductController(IProductService productService, IImageService imageService) {
         this.productService = productService;
         this.imageService = imageService;
     }
@@ -34,7 +35,9 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new NoSuchElementException("Продукт не найден"));
     }
 
     @PutMapping("/{id}")
@@ -52,7 +55,8 @@ public class ProductController {
     public ResponseEntity<String> updateImages(@PathVariable Long id,
                                                @RequestParam("files") MultipartFile[] files,
                                                @RequestParam("color") String color) {
-        Product product = productService.getProductById(id);
+        Product product = productService.getProductById(id)
+                .orElseThrow(() -> new NoSuchElementException("Продукт не найден"));
         imageService.updateProductImages(files, product, color);
         return ResponseEntity.ok("Изображения обновлены");
     }

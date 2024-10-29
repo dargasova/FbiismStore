@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.mysite.fbiism_store.dto.OrderDTO;
 import ru.mysite.fbiism_store.model.Order;
 import ru.mysite.fbiism_store.service.IOrderService;
 
@@ -22,8 +23,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
+    public List<OrderDTO> getAllOrders() {
+        return orderService.getAllOrdersDTO();
     }
 
     @PostMapping
@@ -33,8 +34,8 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id) {
-        return orderService.getOrderById(id)
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable("id") Long id) {
+        return orderService.getOrderDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -45,10 +46,8 @@ public class OrderController {
             Order order = orderService.updateOrder(id, updatedOrder);
             return order != null ? ResponseEntity.ok(order) : ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            logger.warn("Validation error on update: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Server error while updating order: ", e);
             return ResponseEntity.status(500).body("Ошибка сервера при обновлении заказа");
         }
     }
